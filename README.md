@@ -1,18 +1,20 @@
 # LuckyFaucet
 
+![](./assets/CA_banner.jpg)
+
 > Date: 8<sup>th</sup> December 2023 \
 Challenge Author: <font color=#1E9F9A>perrythepwner</font> \
-Difficulty: <font color=green>Easy</font> \
+Difficulty: <font color=lightgreen>Easy</font> \
 Category: <font color=orange> Blockchain</font>
 
 # TL;DR
 
-- The challenge consists in draining a generous faucet by exploiting an unsafe casting from `int64` to `uint64` in Solidity 0.7.6 (latest Solidity version before breaking changes of native integer overflow checks) that causes an integer underflow with negative bounds set.
+- The challenge consists in draining a generous faucet by exploiting an unsafe casting from `int64` to `uint64` in Solidity 0.7.6 (latest Solidity version before 0.8.0 breaking changes of native integer overflow checks) that causes an integer underflow in case of negative bounds set.
 
 ## Description
 
 ```
-Years ago I made this simple faucet with little optimization as a University project. Now I realize that it might be broken, but sadly I can no longer change it :(
+I left a faucet along the path for adventurers capable of overcoming the first hurdles. It should provide enough resources for all players... hoping that someone won't be able to break it and leave none to others.
 ```
 
 ## Skills Required
@@ -35,11 +37,11 @@ The quantity of ETH given out is determined by the previous block hash converted
 
 # Solution
 
-Searching for low hanging fruit vulnerabilities in the contract that would allow us to send us more ETH than the contract allows, we will find nothing. On the other hand, however, the contract does not have many lines, which means that perhaps we should sharpen our eyes a little more and not take everything for granted.  
+Searching for low hanging fruit vulnerabilities in the contract that would allow us to send us more ETH than the contract allows, we will find nothing. On the other hand, the contract does not have many lines, which means that perhaps we should sharpen our sight a little more and not take everything for granted.  
 In fact, we will notice that not all the integer types used in the contract are of the same size (256 bits).    
-Because, as the comments explain, 64 bits are enough to calculate the output value, since the maximum integer rapresentable by `uint64` is ~18 ETH and the faucet will never worry about sending more.  
+Because, as the comments explains, 64 bits are enough to calculate the output value, since the maximum integer rapresentable by `uint64` is ~18 ETH and the faucet "will never worry about sending more".  
 But first of all, we note also that not all integers are `uint`, in fact there are also `int` (signed integers). This means that they allow negative values ​​to be represented.  
-Moreover, we note how - in a somewhat hidden way - an `int64` is cast to `uint64` at `L28`; and what happens when a negative value represented by a signed integer is tried to be represented by an unsigned integer?  
+Moreover, we note how - in a somewhat hidden way - an `int64` is cast to `uint64` at Line 28; and what happens when a negative value represented by a signed integer is tried to be represented by an unsigned integer?  
 It underflows. e.g.:  
 ```-1 in int64 == 2**64 - 1 in uint64```  
 Which means that if we set bounds to negative values like:   
