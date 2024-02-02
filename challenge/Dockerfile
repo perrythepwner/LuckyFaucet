@@ -1,10 +1,10 @@
-FROM debian:bookworm-slim as ctf-base
+FROM python:3.9-slim-bullseye as ctf-base
 
 # install xinetd, create ctf user
 RUN true \
     && mkdir /var/log/ctf/ /startup/ \
     && apt update \
-    && apt install -y xinetd tini python3 python3-pip curl git \
+    && apt install -y xinetd tini curl git \
     && rm -rf /var/cache/apt/archives/ \
     && useradd -m ctf \
     && true
@@ -35,9 +35,11 @@ RUN true \
     && true
 
 # setup challenge handler
-COPY ./requirements.txt /tmp/
-RUN rm -rf /usr/lib/python3.*/EXTERNALLY-MANAGED
-RUN python3 -m pip install -r /tmp/requirements.txt
+COPY ./requirements.in /tmp/
+#RUN rm -rf /usr/lib/python3.*/EXTERNALLY-MANAGED
+RUN pip install pip-tools && \
+    pip-compile /tmp/requirements.in -o /tmp/requirements.txt && \
+    pip install -r /tmp/requirements.txt
 COPY ./backend/chall_handler/eth_sandbox/ /usr/lib/python3/eth_sandbox/
 COPY ./backend/chall_handler/handler.py /home/ctf/backend/handler.py
 COPY ./backend/chall_handler/start-handler.sh /home/ctf/backend/chall_handler/
