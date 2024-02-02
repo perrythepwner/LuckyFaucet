@@ -11,17 +11,17 @@ Category: <font color=orange> Blockchain</font>
 
 - The challenge consists in draining a generous faucet by exploiting an unsafe casting from `int64` to `uint64` in Solidity 0.7.6 (latest Solidity version before 0.8.0 breaking changes of native integer overflow checks) that causes an integer underflow in case of negative bounds set.
 
-## Description
+# Description
 
 ```
 I left a faucet along the path for adventurers capable of overcoming the first hurdles. It should provide enough resources for all players... hoping that someone won't be able to break it and leave none to others.
 ```
 
-## Skills Required
+# Skills Required
 
 - Smart contract interaction.
 
-## Skills Learned
+# Skills Learned
 
 - Unsafe casting for contracts before Solidity 0.8.0
 - Integer underflows/overflows for contracts before Solidity 0.8.0
@@ -50,7 +50,7 @@ Which means that if we set bounds to negative values like:
 We will have an underflow when the contract will try to cast `-1` or `-2` to `uint64` and it will be represented as `2**64 - 1` and `2**64 - 2` respectively, which is a little more than 18 ETH.  
 Enough to solve the challenge.
 
-## Exploitation
+# Exploitation
 
 1) Set the bounds to negative values:
 ```sh
