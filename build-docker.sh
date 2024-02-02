@@ -10,7 +10,7 @@ SHARED_SECRET="17bf3ae1-8020-4527-9edc-bfc64dd14fd3"
 PUBLIC_IP="0.0.0.0"
 TEAM_UUID=$(uuidgen)
 SRV_PORT=8000
-HANDLER_PORT=8001
+HANDLER_PORT=8002
 ################################
 
 docker rm -f $IMAGE && \
